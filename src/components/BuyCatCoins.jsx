@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import CatCoin from '../artifacts/contracts/CatCoin.sol/CatCoin.json';
 
-const catCoinContractAddress = '0x1fAab810CfEB248d31ffc972f18Dc4917A83C79a';
+const catCoinContractAddress = '0x597346565Eb10a60336c6c9C1aCfB26E085fd426';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -11,45 +11,78 @@ const signer = await provider.getSigner();
 const catCoinContract = new ethers.Contract(catCoinContractAddress, CatCoin.abi, signer);
 
 function BuyCatCoins() {
+  const [inputType, setInputType] = useState('eth');
   const [ethAmount, setEthAmount] = useState('');
-  const [catCoinBalance, setCatCoinBalance] = useState(0);
-
-  const ethInputChange = (event) => {
-    setEthAmount(event.target.value);
-  };
+  const [catAmount, setCatAmount] = useState('');
+  const [ethToCatRate, setEthToCatRate] = useState(0);
 
   useEffect(() => {
-    getCatCoinBalance();
+    fetchEthToCatRate();
   }, []);
 
-  const getCatCoinBalance = async () => {
-    const address = await signer.getAddress();
-    const balance = await catCoinContract.balanceOf(address);
-    const balanceInEth = parseFloat(balance.toString()) / 1e18;
-    setCatCoinBalance(balanceInEth);
+  const ethInputChange = (event) => {
+    const value = event.target.value;
+    setEthAmount(value);
+    if (value && !isNaN(value)) {
+      setCatAmount((value * ethToCatRate).toFixed(2));
+    } else {
+      setCatAmount('');
+    }
   };
 
-  const buyCatCoinsWithETH = async () => {
-    if (!ethAmount || isNaN(ethAmount) || ethAmount <= 0) {
-      console.error('Invalid ETH amount');
-      return;
+  const catInputChange = (event) => {
+    const value = event.target.value;
+    setCatAmount(value);
+    if (value && !isNaN(value)) {
+      setEthAmount((value / ethToCatRate).toFixed(6));
+    } else {
+      setEthAmount('');
     }
+  };
 
+  const handleInputTypeChange = (event) => {
+    setInputType(event.target.value);
+    setEthAmount('');
+    setCatAmount('');
+  };
+
+  const fetchEthToCatRate = async () => {
     try {
-      const ethAmountInWei = ethers.parseEther(ethAmount.toString());
-      const result = await catCoinContract.buyCatCoinWithETH({ value: ethAmountInWei });
-      await result.wait();
-      getCatCoinBalance(catCoinContract, signer);
+      const rate = await catCoinContract.getEthToCatRate();
+      setEthToCatRate(parseFloat(rate));
     } catch (error) {
-      console.error('Error buying CatCoins:', error);
+      console.error('Error fetching exchange rate:', error);
     }
   };
 
+  const buyCatCoins= async () => {
+    if (inputType === 'eth' && ethAmount && !isNaN(ethAmount) && ethAmount > 0) {
+      try {
+        const ethAmountInWei = ethers.parseEther(ethAmount.toString());
+        const result = await catCoinContract.buyCatCoinWithETH({ value: ethAmountInWei });
+        await result.wait();
+      } catch (error) {
+        console.error('Error buying CatCoins:', error);
+      }
+    } else if (inputType === 'cat' && catAmount && !isNaN(catAmount) && catAmount > 0) {
+      try {
+        const ethAmountForCat = (catAmount / ethToCatRate).toFixed(6);
+        const ethAmountInWei = ethers.parseEther(ethAmountForCat.toString());
+        const result = await catCoinContract.buyCatCoinWithETH({ value: ethAmountInWei });
+        await result.wait();
+      } catch (error) {
+        console.error('Error buying CatCoins:', error);
+      }
+    } else {
+      console.error('Invalid amount');
+    }
+  };
+  
   const addCatCoinToWallet = async () => {
     const tokenAddress = catCoinContractAddress;
     const tokenSymbol = 'CAT';
     const tokenDecimals = 18;
-    const tokenImage = 'https://gateway.pinata.cloud/ipfs/QmZHBnnHaXM1k1xGLukV3UAT8qgsNDGBrWeHyYwySkLa8A/cat.png'; // Optional image URL
+    const tokenImage = 'https://gateway.pinata.cloud/ipfs/QmZHBnnHaXM1k1xGLukV3UAT8qgsNDGBrWeHyYwySkLa8A/cat.png';
 
     try {
       const wasAdded = await provider.send('wallet_watchAsset', {
@@ -75,20 +108,45 @@ function BuyCatCoins() {
   return (
     <div>
         <button className="btn btn-primary" onClick={addCatCoinToWallet}>Add CatCoin to MetaMask</button>
-        <label htmlFor="ethAmount">Enter ETH amount:</label>
-        <input
-            type="number"
-            id="ethAmount"
-            value={ethAmount}
-            onChange={ethInputChange}
-            step="0.001"
-            min="0.001"
-            placeholder="0.001"
-            className="form-control"
-        />
-        <button className="btn btn-secondary" onClick={buyCatCoinsWithETH}>
-            Buy CatCoins with ETH
-        </button>
+        <br />
+          <label htmlFor="inputType">Select input type:</label>
+          <select id="inputType" value={inputType} onChange={handleInputTypeChange} className="form-control">
+            <option value="eth">ETH</option>
+            <option value="cat">CAT</option>
+          </select>
+        <br />
+        {inputType === 'eth' ? (
+          <div>
+            <label htmlFor="ethAmount">Enter ETH amount:</label>
+            <input
+              type="number"
+              id="ethAmount"
+              value={ethAmount}
+              onChange={ethInputChange}
+              step="0.001"
+              min="0.001"
+              placeholder="0.001"
+              className="form-control"
+            />
+          </div>
+        ) : (
+          <div>
+            <label htmlFor="catAmount">Enter CAT amount:</label>
+            <input
+              type="number"
+              id="catAmount"
+              value={catAmount}
+              onChange={catInputChange}
+              step="1"
+              min="1"
+              placeholder="1"
+              className="form-control"
+            />
+          </div>
+      )}
+      <button className="btn btn-secondary" onClick={buyCatCoins}>
+        Buy CatCoins
+      </button>
     </div>
   );
 }
