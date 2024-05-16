@@ -3,6 +3,9 @@ import MintNFT from './MintNFT';
 import BuyCatCoins from './BuyCatCoins';
 import CatBalance from './CatBalance';
 import MintCatCoin from './MintCatCoin';
+import DepositCatCoin from './DepositCatCoin';
+import UpdateCatRate from './UpdateCatRate';
+import Withdraw from './Withdraw';
 
 import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
@@ -25,7 +28,6 @@ function Home() {
 
   const getCount = async () => {
     const count = await NFTContract.count();
-    console.log(parseInt(count));
     setTotalMinted(parseInt(count));
   };
 
@@ -35,6 +37,9 @@ function Home() {
       <BuyCatCoins />
       <CatBalance />
       <MintCatCoin />
+      <DepositCatCoin />
+      <UpdateCatRate />
+      <Withdraw />
 
       <h1>NFT Collection</h1>
       <div className="container">
