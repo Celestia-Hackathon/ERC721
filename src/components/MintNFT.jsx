@@ -5,7 +5,7 @@ import CatNFT from '../artifacts/contracts/CatNFT.sol/CatNFT.json';
 import CatCoin from '../artifacts/contracts/CatCoin.sol/CatCoin.json';
 
 const NFTContractAddress = '0x12E0c157429a6765711D6Bde42B62bec095B9bB7';
-const catCoinContractAddress = '0x1fAab810CfEB248d31ffc972f18Dc4917A83C79a';
+const catCoinContractAddress = '0x597346565Eb10a60336c6c9C1aCfB26E085fd426';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -27,7 +27,6 @@ function MintNFT({ tokenId, getCount }) {
 
   const getMintedStatus = async () => {
     const result = await NFTContract.isContentOwned(metadataURI);
-    console.log(result)
     setIsMinted(result);
   };
 
