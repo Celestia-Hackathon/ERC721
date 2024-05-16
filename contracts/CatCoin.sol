@@ -28,15 +28,21 @@ contract CatCoin is ERC20, Ownable, ReentrancyGuard {
         emit TokensPurchased(msg.sender, catAmount, ethToCatRate, "ETH");
     }
 
+    function getEthToCatRate() public view returns(uint256) {
+        return ethToCatRate;
+    }
+
     function updateEthToCatRate(uint256 newRate) public onlyOwner {
         ethToCatRate = newRate;
     }
 
     function depositCatCoins(uint256 amount) public onlyOwner {
+        require(balanceOf(msg.sender) >= amount, "Insufficient CatCoins to deposit");
         _transfer(msg.sender, address(this), amount);
     }
 
-    function withdrawEth(uint256 amount) public onlyOwner {
-        payable(owner()).transfer(amount);
+    function withdrawEth() public onlyOwner {
+        (bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
+        require(callSuccess, "Call failed!");
     }
 }
