@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import CatCoin from '../artifacts/contracts/CatCoin.sol/CatCoin.json';
 
-const catCoinContractAddress = '0x1fAab810CfEB248d31ffc972f18Dc4917A83C79a';
+const catCoinContractAddress = '0x597346565Eb10a60336c6c9C1aCfB26E085fd426';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
 
@@ -11,7 +11,7 @@ const signer = await provider.getSigner();
 const catCoinContract = new ethers.Contract(catCoinContractAddress, CatCoin.abi, signer);
 
 function MintCatCoin() {
-  const [catAmount, setCatAmount] = useState('');
+  const [catAmount, setCatAmount] = useState();
 
   const catInputChange = (event) => {
     setCatAmount(event.target.value);
@@ -24,11 +24,10 @@ function MintCatCoin() {
     }
 
     try {
-      const tx = await catCoinContract.mint(catCoinContractAddress, ethers.parseUnits('100', 18)); // Mint 100 CatCoins
+      const tx = await catCoinContract.mint(catCoinContractAddress, ethers.parseUnits(catAmount, 18));
       await tx.wait();
-      getCatCoinBalance();
     } catch (error) {
-      console.error('Error buying CatCoins:', error);
+      console.error('Error minting CatCoins:', error);
     }
   };
 
