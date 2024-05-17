@@ -5,16 +5,18 @@ pragma solidity ^0.8.8;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./CatCoin.sol";
+import { ERC2771Context } from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
 
-contract CatNFT is ERC721, ERC721URIStorage, Ownable {
+contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
     
     uint256 private _nextTokenId;
     mapping(string => uint8) existingURIs;
+    event TokensTrasfered(address indexed recipient, uint256 amount);
 
-    constructor(address initialOwner)
+    constructor(address initialOwner, address trustedForwarder, address catCoinAddress)
         ERC721("Catstronauts", "CUTE")
         Ownable(initialOwner)
+        ERC2771Context(trustedForwarder) 
     {}
 
     function _baseURI() internal pure override returns (string memory) {
@@ -76,7 +78,7 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable {
 
         uint256 newItemId = _nextTokenId++;
         existingURIs[metadataURI] = 1;
-
+        
         _safeMint(recipient, newItemId);
         _setTokenURI(newItemId, metadataURI);
 
@@ -85,5 +87,17 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable {
 
     function count() public view returns (uint256) {
         return _nextTokenId;
+    }
+
+    function withdramCat(uint256 amount) public onlyOwner {
+        _transfer(address(this), msg.sender, amount);
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return ERC2771Context._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return ERC2771Context._msgData();
     }
 }
