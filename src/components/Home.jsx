@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import CatNFT from '../artifacts/contracts/CatNFT.sol/CatNFT.json';
 
-const NFTContractAddress = '0x56012074492279b3C2a7a13c820c3ee5eFb67e7C';
+const NFTContractAddress = '0x411446C52455A4cAF7b089204Cb1eD5888244ef4';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
 
