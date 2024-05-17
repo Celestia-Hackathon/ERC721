@@ -4,7 +4,7 @@ import { ethers } from 'ethers';
 import CatNFT from '../artifacts/contracts/CatNFT.sol/CatNFT.json';
 import CatCoin from '../artifacts/contracts/CatCoin.sol/CatCoin.json';
 
-const NFTContractAddress = '0x12E0c157429a6765711D6Bde42B62bec095B9bB7';
+const NFTContractAddress = '0x8c528c7e87A2766363767319d54b533133e6F6BC';
 const catCoinContractAddress = '0xA38dafA100bb9852b7C4065CdF2dE774c39043f8';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
