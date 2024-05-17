@@ -70,7 +70,7 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
         return newItemId;
     }
 
-    function payToMintWithCatCoins(address recipient, string memory metadataURI) 
+    function payToMintWithCatCoins(string memory metadataURI) 
         public
         returns (uint256) 
     {
@@ -79,6 +79,7 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
         uint256 newItemId = _nextTokenId++;
         existingURIs[metadataURI] = 1;
         
+        address recipient = _msgSender();
         _safeMint(recipient, newItemId);
         _setTokenURI(newItemId, metadataURI);
 
@@ -96,6 +97,11 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
     function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
         return ERC2771Context._msgSender();
     }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return ERC2771Context._msgData();
+    }
+}
 
     function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
         return ERC2771Context._msgData();
