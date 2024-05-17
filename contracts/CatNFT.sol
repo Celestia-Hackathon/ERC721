@@ -13,7 +13,7 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
     mapping(string => uint8) existingURIs;
     event TokensTrasfered(address indexed recipient, uint256 amount);
 
-    constructor(address initialOwner, address trustedForwarder, address catCoinAddress)
+    constructor(address initialOwner, address trustedForwarder)
         ERC721("Catstronauts", "CUTE")
         Ownable(initialOwner)
         ERC2771Context(trustedForwarder) 
@@ -97,11 +97,6 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
     function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
         return ERC2771Context._msgSender();
     }
-
-    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
-        return ERC2771Context._msgData();
-    }
-}
 
     function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
         return ERC2771Context._msgData();
