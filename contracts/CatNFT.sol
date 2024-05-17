@@ -90,7 +90,7 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable, ERC2771Context {
         return _nextTokenId;
     }
 
-    function withdramCat(uint256 amount) public onlyOwner {
+    function withdrawCat(uint256 amount) public onlyOwner {
         _transfer(address(this), msg.sender, amount);
     }
 
