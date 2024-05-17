@@ -5,12 +5,14 @@ dotenv.config();
 async function main() {
 
   const CatNFT = await ethers.getContractFactory("CatNFT");
-  const catNFT = await CatNFT.deploy(process.env.PUBLIC_KEY);
+  const trustForwarder = '0xc65d82ECE367EF06bf2AB791B3f3CF037Dc0e816';
+  const catCoinAddress = '0x4ebb45Ef0a7a5aE2BD1DEf50eE9EBF6628064cbb';
+  const catNFT = await CatNFT.deploy(process.env.PUBLIC_KEY, trustForwarder, catCoinAddress);
 
   await catNFT.waitForDeployment();
 
   console.log("Cat NFT deployed to:", catNFT.target);
-  await verify(catNFT.target, [process.env.PUBLIC_KEY]);
+  await verify(catNFT.target, [process.env.PUBLIC_KEY, trustForwarder]);
 }
   
 const verify = async (contractAddress, args) => {
