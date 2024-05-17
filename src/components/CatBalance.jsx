@@ -7,7 +7,7 @@ const provider = new ethers.BrowserProvider(window.ethereum);
 
 const signer = await provider.getSigner();
 
-const catCoinContractAddress = '0x4ebb45Ef0a7a5aE2BD1DEf50eE9EBF6628064cbb';
+const catCoinContractAddress = '0x04AD2aDd99df586E5236b0DA1EA2df1881E21662';
 
 const catCoinContract = new ethers.Contract(catCoinContractAddress, CatCoin.abi, signer);
 
