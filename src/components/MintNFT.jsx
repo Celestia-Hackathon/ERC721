@@ -6,7 +6,7 @@ import CatCoin from '../artifacts/contracts/CatCoin.sol/CatCoin.json';
 
 const relay = new GelatoRelay();
 
-const NFTContractAddress = '0x56012074492279b3C2a7a13c820c3ee5eFb67e7C';
+const NFTContractAddress = '0x411446C52455A4cAF7b089204Cb1eD5888244ef4';
 const catCoinContractAddress = '0x4ebb45Ef0a7a5aE2BD1DEf50eE9EBF6628064cbb';
 
 const provider = new ethers.BrowserProvider(window.ethereum);
