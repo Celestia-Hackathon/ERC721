@@ -5,6 +5,7 @@ pragma solidity ^0.8.8;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./CatCoin.sol";
 
 contract CatNFT is ERC721, ERC721URIStorage, Ownable {
     
@@ -27,8 +28,6 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable {
         _setTokenURI(tokenId, uri);
         existingURIs[uri] = 1;
     }
-
-    // The following functions are overrides required by Solidity.
 
     function tokenURI(uint256 tokenId)
         public
@@ -59,6 +58,21 @@ contract CatNFT is ERC721, ERC721URIStorage, Ownable {
     {
         require(existingURIs[metadataURI] != 1, 'NFT already minted!');
         require(msg.value >= 0.05 ether, 'Need to pay up!');
+
+        uint256 newItemId = _nextTokenId++;
+        existingURIs[metadataURI] = 1;
+
+        _safeMint(recipient, newItemId);
+        _setTokenURI(newItemId, metadataURI);
+
+        return newItemId;
+    }
+
+    function payToMintWithCatCoins(address recipient, string memory metadataURI) 
+        public
+        returns (uint256) 
+    {
+        require(existingURIs[metadataURI] != 1, 'NFT already minted!');
 
         uint256 newItemId = _nextTokenId++;
         existingURIs[metadataURI] = 1;
