@@ -10,6 +10,7 @@ contract CatCoin is ERC20, Ownable, ReentrancyGuard {
     uint256 public ethToCatRate;
 
     event TokensPurchased(address indexed purchaser, uint256 amount, uint256 rate, string currency);
+    event TokensEarned(address indexed claimer, uint256 amount);
 
     constructor(address initialOwner, uint256 _ethToCatRate) ERC20("Cat", "CAT") Ownable(initialOwner) {
         _mint(address(this), 10000 * 10 ** decimals());
@@ -26,6 +27,12 @@ contract CatCoin is ERC20, Ownable, ReentrancyGuard {
 
         _transfer(address(this), msg.sender, catAmount);
         emit TokensPurchased(msg.sender, catAmount, ethToCatRate, "ETH");
+    }
+
+     function claim(uint256 amount) public {
+        require(balanceOf(address(this)) >= amount, "Not enough CatCoins in the reserve");
+        _transfer(address(this), msg.sender, amount);
+        emit TokensEarned(msg.sender, amount);
     }
 
     function getEthToCatRate() public view returns(uint256) {
